@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "name": "enhanced-ultimate-squeeze-scanner",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/index.py"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.9"
+  },
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30
+    }
+  }
+}

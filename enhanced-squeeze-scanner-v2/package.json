@@ -1,0 +1,35 @@
+{
+  "name": "enhanced-ultimate-squeeze-scanner",
+  "version": "2.0.0",
+  "description": "Professional-grade squeeze detection platform with enhanced 5x Ortex data integration, parallel processing, and smart caching",
+  "main": "api/index.py",
+  "scripts": {
+    "dev": "python enhanced_integrated_server.py",
+    "build": "echo 'Build complete - Flask serverless deployment ready'",
+    "start": "python enhanced_integrated_server.py"
+  },
+  "keywords": [
+    "squeeze-scanner",
+    "ortex-api",
+    "short-interest",
+    "trading",
+    "finance",
+    "options",
+    "stock-analysis",
+    "gamma-squeeze",
+    "short-squeeze"
+  ],
+  "author": "Renotrader31",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Renotrader31/enhanced-ultimate-squeeze-scanner.git"
+  },
+  "dependencies": {
+    "flask": "^3.1.2",
+    "flask-cors": "^6.0.1"
+  },
+  "engines": {
+    "python": "3.x"
+  }
+}

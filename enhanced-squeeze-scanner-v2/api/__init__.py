@@ -1,0 +1,1 @@
+# Ultimate Squeeze Scanner API Module

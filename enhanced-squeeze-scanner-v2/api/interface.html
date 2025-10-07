@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Ultimate Squeeze Scanner - Live Ortex Professional Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        /* Global Dark Theme */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(20, 20, 30, 0.95);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-blue: #4fc3f7;
+            --accent-purple: #ba68c8;
+            --accent-green: #66bb6a;
+            --accent-red: #ef5350;
+            --accent-orange: #ff9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+        
+        /* Header Styling */
+        .main-header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        /* Live Status Badge */
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent-green);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Glass Card Effect */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--primary-gradient);
+            opacity: 0.6;
+        }
+        
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+            color: var(--text-primary);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        /* Button Styles */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+        
+        .btn-gradient-secondary {
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        /* Results Section */
+        .results-section {
+            margin-top: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Result Cards */
+        .result-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0.8;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr 120px 150px 100px;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .ticker-symbol {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        
+        .price-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        
+        .metric-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .metric-value-small {
+            font-weight: 700;
+            color: var(--accent-green);
+            font-size: 0.9rem;
+        }
+        
+        .metric-label-small {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+        }
+        
+        .squeeze-score {
+            text-align: center;
+        }
+        
+        .score-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        
+        .score-type {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+        
+        .risk-factors {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .risk-tag {
+            background: var(--accent-red);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .data-quality {
+            text-align: center;
+        }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .live-data {
+            background: var(--accent-green);
+            color: white;
+        }
+        
+        .estimated-data {
+            background: var(--accent-orange);
+            color: white;
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Category Selection */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .category-option:hover {
+            border-color: var(--accent-blue);
+            background: rgba(79, 195, 247, 0.1);
+        }
+        
+        .category-option.selected {
+            border-color: var(--accent-blue);
+            background: rgba(79, 195, 247, 0.15);
+        }
+        
+        .category-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .category-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .glass-card {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4 py-2">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="container">
+                <h1 class="main-title">🚀 Ultimate Squeeze Scanner</h1>
+                <p class="subtitle">Professional Short Squeeze Analysis with Live Ortex API Integration</p>
+                <div class="text-center">
+                    <span class="live-badge">
+                        <div class="pulse-dot"></div>
+                        Live Market Data
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Configuration Panel -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 1.5rem; font-weight: 600;">
+                        <i class="fas fa-cog me-2"></i>Analysis Configuration
+                    </h3>
+                    
+                    <!-- Scan Mode -->
+                    <div class="form-group">
+                        <label class="form-label">Scan Mode</label>
+                        <select class="form-select" id="scanMode" onchange="toggleScanMode()">
+                            <option value="comprehensive">🔍 Comprehensive Scan</option>
+                            <option value="single">🎯 Single Ticker Analysis</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Single Ticker Input -->
+                    <div class="form-group" id="tickerGroup" style="display: none;">
+                        <label class="form-label">Stock Ticker</label>
+                        <input type="text" class="form-control" id="ticker" placeholder="e.g., GME, AMC, TSLA" style="text-transform: uppercase;">
+                    </div>
+                    
+                    <!-- Category Selection -->
+                    <div id="categoriesGroup">
+                        <div class="form-group">
+                            <label class="form-label">Stock Categories</label>
+                            <select class="form-select" id="categories" multiple size="6">
+                                <option value="top_meme_stocks" selected>🚀 Top Meme Stocks (GME, AMC, etc.)</option>
+                                <option value="high_short_interest">🔥 High Short Interest Plays</option>
+                                <option value="biotech_squeeze">🧬 Biotech Squeeze Candidates</option>
+                                <option value="ev_and_battery" selected>⚡ EV & Battery Technology</option>
+                                <option value="gaming_metaverse">🎮 Gaming & Metaverse</option>
+                                <option value="crypto_miners">₿ Crypto Mining Stocks</option>
+                                <option value="fintech_disruption">💳 Fintech Disruption</option>
+                                <option value="ai_and_cloud">🤖 AI & Cloud Computing</option>
+                                <option value="healthcare_innovation">🏥 Healthcare Innovation</option>
+                                <option value="space_and_defense">🛰️ Space & Defense</option>
+                                <option value="renewable_energy">☀️ Renewable Energy</option>
+                                <option value="recent_ipos">🆕 Recent IPOs</option>
+                                <option value="volatility_plays">📈 Volatility Plays</option>
+                                <option value="small_cap_movers">📊 Small Cap Movers</option>
+                                <option value="large_cap_samples">🏦 Large Cap Samples</option>
+                            </select>
+                            <small class="text-muted">Hold Ctrl/Cmd to select multiple categories</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Ortex API Key -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key me-1"></i>Ortex API Key
+                        </label>
+                        <input type="password" class="form-control" id="ortexKey" placeholder="Your Ortex API key for live data">
+                        <small class="text-muted">Required for live short interest data</small>
+                    </div>
+                    
+                    <!-- Scan Parameters -->
+                    <div id="scanParams">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="form-label">Max Tickers</label>
+                                    <input type="number" class="form-control" id="maxTickers" value="10" min="5" max="20">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="form-label">Min Score</label>
+                                    <input type="number" class="form-control" id="minScore" value="40" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scan Buttons -->
+                    <button class="btn btn-gradient w-100 mb-3" onclick="startScan()" id="scanBtn">
+                        <i class="fas fa-rocket me-2"></i>Start Squeeze Analysis
+                    </button>
+                    
+                    <button class="btn btn-gradient-secondary w-100" onclick="testOrtexConnection()" id="testBtn">
+                        <i class="fas fa-wifi me-2"></i>Test Ortex Connection
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 style="color: var(--accent-purple); font-weight: 600; margin: 0;">
+                            <i class="fas fa-chart-line me-2"></i>Analysis Results
+                        </h3>
+                        <div id="statusBadge" class="live-indicator estimated-data">
+                            <i class="fas fa-circle"></i>
+                            Ready
+                        </div>
+                    </div>
+                    
+                    <!-- Results Content -->
+                    <div id="resultsContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x mb-3" style="color: var(--text-secondary);"></i>
+                            <h5 style="color: var(--text-secondary);">Ready for Analysis</h5>
+                            <p style="color: var(--text-secondary);">Configure your scan parameters and click "Start Squeeze Analysis" to begin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Application JavaScript -->
+    <script>
+        let isScanning = false;
+        
+        // Toggle scan mode
+        function toggleScanMode() {
+            const mode = document.getElementById('scanMode').value;
+            const tickerGroup = document.getElementById('tickerGroup');
+            const categoriesGroup = document.getElementById('categoriesGroup');
+            const scanParams = document.getElementById('scanParams');
+            
+            if (mode === 'single') {
+                tickerGroup.style.display = 'block';
+                categoriesGroup.style.display = 'none';
+                scanParams.style.display = 'none';
+            } else {
+                tickerGroup.style.display = 'none';
+                categoriesGroup.style.display = 'block';
+                scanParams.style.display = 'block';
+            }
+        }
+        
+        // Test Ortex connection
+        async function testOrtexConnection() {
+            const ortexKey = document.getElementById('ortexKey').value.trim();
+            const testBtn = document.getElementById('testBtn');
+            const statusBadge = document.getElementById('statusBadge');
+            
+            if (!ortexKey) {
+                showError('Please enter your Ortex API key');
+                return;
+            }
+            
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
+            statusBadge.className = 'live-indicator estimated-data';
+            statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing';
+            
+            try {
+                const response = await fetch('/api/single-scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker: 'GME',
+                        ortex_key: ortexKey
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result.data_quality === 'live_ortex') {
+                    statusBadge.className = 'live-indicator live-data';
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Ortex Connected';
+                    showSuccess('Ortex API connection successful! Live data available.');
+                } else if (data.success) {
+                    statusBadge.className = 'live-indicator estimated-data';
+                    statusBadge.innerHTML = '<i class="fas fa-exclamation-circle"></i> Using Estimates';
+                    showWarning('Connected but using estimated data. Check your API key.');
+                } else {
+                    statusBadge.className = 'live-indicator estimated-data';
+                    statusBadge.innerHTML = '<i class="fas fa-times-circle"></i> Connection Failed';
+                    showError(`Connection failed: ${data.error}`);
+                }
+            } catch (error) {
+                statusBadge.className = 'live-indicator estimated-data';
+                statusBadge.innerHTML = '<i class="fas fa-times-circle"></i> Error';
+                showError(`Network error: ${error.message}`);
+            }
+            
+            testBtn.disabled = false;
+            testBtn.innerHTML = '<i class="fas fa-wifi me-2"></i>Test Ortex Connection';
+        }
+        
+        // Start scan
+        async function startScan() {
+            if (isScanning) return;
+            
+            const scanBtn = document.getElementById('scanBtn');
+            const statusBadge = document.getElementById('statusBadge');
+            const resultsContent = document.getElementById('resultsContent');
+            const mode = document.getElementById('scanMode').value;
+            
+            isScanning = true;
+            scanBtn.disabled = true;
+            scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+            statusBadge.className = 'live-indicator estimated-data';
+            statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning';
+            
+            // Show loading
+            resultsContent.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="loading-spinner"></div>
+                    <h5 style="color: var(--accent-blue); margin-top: 1rem;">Analysis in Progress</h5>
+                    <p style="color: var(--text-secondary);">Fetching live market data and calculating squeeze scores...</p>
+                </div>
+            `;
+            
+            try {
+                let response;
+                const ortexKey = document.getElementById('ortexKey').value.trim();
+                
+                if (mode === 'single') {
+                    const ticker = document.getElementById('ticker').value.trim().toUpperCase();
+                    if (!ticker) {
+                        showError('Please enter a ticker symbol');
+                        return;
+                    }
+                    
+                    response = await fetch('/api/single-scan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ticker: ticker,
+                            ortex_key: ortexKey
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        displaySingleResult(data.result);
+                    } else {
+                        showError(data.error);
+                    }
+                } else {
+                    const categoriesSelect = document.getElementById('categories');
+                    const selectedCategories = Array.from(categoriesSelect.selectedOptions).map(option => option.value);
+                    const maxTickers = parseInt(document.getElementById('maxTickers').value);
+                    const minScore = parseInt(document.getElementById('minScore').value);
+                    
+                    if (selectedCategories.length === 0) {
+                        showError('Please select at least one category');
+                        return;
+                    }
+                    
+                    response = await fetch('/api/squeeze/scan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ortex_key: ortexKey,
+                            filters: {
+                                categories: selectedCategories,
+                                max_tickers: maxTickers,
+                                min_score: minScore
+                            }
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        displayScanResults(data.scan_results, data.scan_stats, minScore);
+                    } else {
+                        showError(data.error);
+                    }
+                }
+            } catch (error) {
+                showError(`Network error: ${error.message}`);
+            }
+            
+            isScanning = false;
+            scanBtn.disabled = false;
+            scanBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Start Squeeze Analysis';
+            statusBadge.className = 'live-indicator live-data';
+            statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Complete';
+        }
+        
+        // Display single result
+        function displaySingleResult(result) {
+            const resultsContent = document.getElementById('resultsContent');
+            const isLive = result.data_quality === 'live_ortex';
+            
+            resultsContent.innerHTML = `
+                <div class="fade-in">
+                    <div class="result-card">
+                        <div class="result-grid">
+                            <div>
+                                <div class="ticker-symbol">${result.ticker}</div>
+                                <div class="price-info">$${result.current_price}</div>
+                                <div class="price-info" style="color: ${result.price_change >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${result.price_change >= 0 ? '+' : ''}${result.price_change_pct}%
+                                </div>
+                            </div>
+                            
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.short_interest}%</div>
+                                    <div class="metric-label-small">Short Interest</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.utilization}%</div>
+                                    <div class="metric-label-small">Utilization</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.cost_to_borrow}%</div>
+                                    <div class="metric-label-small">Cost to Borrow</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.days_to_cover}d</div>
+                                    <div class="metric-label-small">Days to Cover</div>
+                                </div>
+                            </div>
+                            
+                            <div class="squeeze-score">
+                                <div class="score-number">${result.squeeze_score}</div>
+                                <div class="score-type" style="background: ${getSqueezeColor(result.squeeze_score)}; color: white;">
+                                    ${result.squeeze_type}
+                                </div>
+                            </div>
+                            
+                            <div class="risk-factors">
+                                ${result.risk_factors.slice(0, 3).map(factor => 
+                                    `<div class="risk-tag">${factor.replace(/_/g, ' ')}</div>`
+                                ).join('')}
+                            </div>
+                            
+                            <div class="data-quality">
+                                <div class="live-indicator ${isLive ? 'live-data' : 'estimated-data'}">
+                                    <i class="fas fa-${isLive ? 'wifi' : 'calculator'}"></i>
+                                    ${isLive ? 'LIVE' : 'EST'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Display scan results
+        function displayScanResults(results, stats, minScore) {
+            const resultsContent = document.getElementById('resultsContent');
+            const filteredResults = results.filter(r => r.squeeze_score >= minScore);
+            
+            let html = `
+                <div class="fade-in">
+                    <div class="stats-grid">
+                        <div class="stat-card slide-up">
+                            <div class="stat-value">${stats.successful_analysis}</div>
+                            <div class="stat-label">Analyzed</div>
+                        </div>
+                        <div class="stat-card slide-up">
+                            <div class="stat-value">${filteredResults.length}</div>
+                            <div class="stat-label">Above Min</div>
+                        </div>
+                        <div class="stat-card slide-up">
+                            <div class="stat-value">${stats.live_ortex_count}</div>
+                            <div class="stat-label">Live Data</div>
+                        </div>
+                        <div class="stat-card slide-up">
+                            <div class="stat-value">${stats.scan_time_seconds}s</div>
+                            <div class="stat-label">Scan Time</div>
+                        </div>
+                        <div class="stat-card slide-up">
+                            <div class="stat-value" style="text-transform: capitalize;">${stats.performance_rating}</div>
+                            <div class="stat-label">Performance</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-list">
+            `;
+            
+            filteredResults.forEach((result, index) => {
+                const isLive = result.data_quality === 'live_ortex';
+                html += `
+                    <div class="result-card slide-up" style="animation-delay: ${index * 0.1}s;">
+                        <div class="result-grid">
+                            <div>
+                                <div class="ticker-symbol">${result.ticker}</div>
+                                <div class="price-info">$${result.current_price}</div>
+                                <div class="price-info" style="color: ${result.price_change >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${result.price_change >= 0 ? '+' : ''}${result.price_change_pct}%
+                                </div>
+                            </div>
+                            
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.short_interest}%</div>
+                                    <div class="metric-label-small">Short Interest</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.utilization}%</div>
+                                    <div class="metric-label-small">Utilization</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.cost_to_borrow}%</div>
+                                    <div class="metric-label-small">Cost to Borrow</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value-small">${result.ortex_data.days_to_cover}d</div>
+                                    <div class="metric-label-small">Days to Cover</div>
+                                </div>
+                            </div>
+                            
+                            <div class="squeeze-score">
+                                <div class="score-number">${result.squeeze_score}</div>
+                                <div class="score-type" style="background: ${getSqueezeColor(result.squeeze_score)}; color: white;">
+                                    ${result.squeeze_type.replace(' Risk', '')}
+                                </div>
+                            </div>
+                            
+                            <div class="risk-factors">
+                                ${result.risk_factors.slice(0, 3).map(factor => 
+                                    `<div class="risk-tag">${factor.replace(/_/g, ' ')}</div>`
+                                ).join('')}
+                            </div>
+                            
+                            <div class="data-quality">
+                                <div class="live-indicator ${isLive ? 'live-data' : 'estimated-data'}">
+                                    <i class="fas fa-${isLive ? 'wifi' : 'calculator'}"></i>
+                                    ${isLive ? 'LIVE' : 'EST'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            if (filteredResults.length === 0) {
+                html = `
+                    <div class="text-center py-5 fade-in">
+                        <i class="fas fa-search fa-3x mb-3" style="color: var(--text-secondary);"></i>
+                        <h5 style="color: var(--text-secondary);">No High-Score Opportunities Found</h5>
+                        <p style="color: var(--text-secondary);">Try lowering the minimum score or selecting different categories</p>
+                    </div>
+                `;
+            }
+            
+            resultsContent.innerHTML = html;
+        }
+        
+        // Utility functions
+        function getSqueezeColor(score) {
+            if (score >= 80) return '#d32f2f';
+            if (score >= 65) return '#f44336';
+            if (score >= 45) return '#ff9800';
+            if (score >= 25) return '#2196F3';
+            return '#4CAF50';
+        }
+        
+        function showError(message) {
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div class="text-center py-5 fade-in">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3" style="color: var(--accent-red);"></i>
+                    <h5 style="color: var(--accent-red);">Error</h5>
+                    <p style="color: var(--text-secondary);">${message}</p>
+                </div>
+            `;
+        }
+        
+        function showSuccess(message) {
+            // You could implement a toast notification here
+            console.log('Success:', message);
+        }
+        
+        function showWarning(message) {
+            // You could implement a toast notification here
+            console.log('Warning:', message);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleScanMode();
+        });
+    </script>
+</body>
+</html>
