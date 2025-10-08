@@ -1,114 +1,80 @@
-Enhanced Ultimate Squeeze Scanner - Vercel Serverless Handler
-Simplified version guaranteed to work with Vercel
-"""
+try:
+    from flask import Flask, jsonify, request
+    import json
+    import os
+    from datetime import datetime
+except ImportError as e:
+    # Fallback for missing imports
+    def create_error_response():
+        return f"Import Error: {str(e)}"
 
-from flask import Flask, request, jsonify
-import json
-import urllib.parse
-import urllib.request
-import os
-from datetime import datetime
-import time
-
-# Create Flask app for serverless
+# Create Flask app
 app = Flask(__name__)
 
-# Test endpoint
-@app.route('/')
-def index():
-    """Simple test endpoint"""
-    return jsonify({
-        'status': 'success',
-        'message': 'Enhanced Ultimate Squeeze Scanner v2.0 - Serverless API Active',
-        'timestamp': datetime.now().isoformat(),
-        'endpoints': [
-            '/api/health',
-            '/api/squeeze/scan'
-        ]
-    })
-
-@app.route('/api/health')
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'version': 'enhanced_serverless_v2.0',
-        'deployment': 'vercel_serverless',
-        'features': [
-            'Enhanced Ortex integration',
-            'Smart caching system', 
-            'Enhanced squeeze scoring',
-            'Real-time price data integration'
-        ],
-        'timestamp': datetime.now().isoformat()
-    })
-
-@app.route('/api/squeeze/scan', methods=['POST'])
-def squeeze_scan():
-    """Simple squeeze scan endpoint"""
+@app.route('/', methods=['GET'])
+def home():
     try:
-        data = request.get_json() or {}
-        tickers_input = data.get('tickers', 'GME,AMC,TSLA')
-        ortex_key = data.get('ortex_key', os.environ.get('ORTEX_API_KEY'))
-        
-        if not ortex_key:
-            return jsonify({
-                'success': False,
-                'error': 'Ortex API key required',
-                'message': 'Please set ORTEX_API_KEY environment variable'
-            }), 400
-        
-        # Parse tickers
-        if isinstance(tickers_input, str):
-            tickers = [t.strip().upper() for t in tickers_input.replace(',', ' ').split() if t.strip()]
-        else:
-            tickers = ['GME', 'AMC', 'TSLA']
-        
-        # Mock results for testing (replace with actual Ortex calls)
-        results = []
-        for ticker in tickers[:5]:  # Limit to 5 for serverless
-            result = {
-                'ticker': ticker,
-                'squeeze_score': 75,
-                'squeeze_type': 'HIGH SQUEEZE RISK',
-                'risk_class': 'squeeze-high',
-                'current_price': 150.00,
-                'price_change': 5.25,
-                'price_change_pct': 3.6,
-                'volume': 1250000,
-                'ortex_data': {
-                    'short_interest': 28.5,
-                    'cost_to_borrow': 15.2,
-                    'days_to_cover': 4.8,
-                    'data_sources': ['test_mode'],
-                    'confidence': 'high'
-                },
-                'success': True
-            }
-            results.append(result)
-        
         return jsonify({
-            'success': True,
-            'message': f'Enhanced squeeze scan complete - {len(results)} tickers analyzed',
-            'results': results,
-            'total_tickers': len(results),
-            'scan_timestamp': datetime.now().isoformat(),
-            'test_mode': True
+            "status": "success",
+            "message": "🚀 Enhanced Ultimate Squeeze Scanner v2.0 - WORKING!",
+            "timestamp": datetime.now().isoformat(),
+            "endpoints": [
+                "/api/health",
+                "/api/test"
+            ]
         })
-        
     except Exception as e:
+        return f"Error in home route: {str(e)}", 500
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    try:
         return jsonify({
-            'success': False,
-            'error': f'Scan error: {str(e)}',
-            'message': 'Serverless function error'
-        }), 500
+            "status": "healthy",
+            "version": "2.0.0",
+            "message": "Enhanced Ultimate Squeeze Scanner - Serverless Active",
+            "timestamp": datetime.now().isoformat(),
+            "python_version": "3.x",
+            "deployment": "vercel_serverless"
+        })
+    except Exception as e:
+        return f"Error in health route: {str(e)}", 500
 
-# Vercel handler
-def handler(request, context=None):
-    """Vercel serverless handler"""
-    with app.app_context():
-        return app.full_dispatch_request()
+@app.route('/api/test', methods=['GET', 'POST'])
+def test():
+    try:
+        method = request.method if request else "GET"
+        return jsonify({
+            "status": "test_success",
+            "method": method,
+            "message": "API endpoint is working correctly!",
+            "ready_for_enhancement": True
+        })
+    except Exception as e:
+        return f"Error in test route: {str(e)}", 500
 
-# For local development
+# Catch-all route for debugging
+@app.route('/<path:path>', methods=['GET', 'POST'])
+def catch_all(path):
+    try:
+        return jsonify({
+            "status": "catch_all",
+            "path": path,
+            "message": f"Path /{path} received",
+            "available_endpoints": ["/", "/api/health", "/api/test"]
+        })
+    except Exception as e:
+        return f"Error in catch-all: {str(e)}", 500
+
+# Error handler
+@app.errorhandler(500)
+def handle_500(e):
+    return jsonify({
+        "status": "error",
+        "message": "Internal server error",
+        "error": str(e)
+    }), 500
+
+# For local testing
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
