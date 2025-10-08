@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Ultimate Squeeze Scanner v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .config-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+
+        .scan-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .scan-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .ticker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ticker-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .squeeze-score {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .squeeze-extreme { background: linear-gradient(45deg, #ff4757, #ff3838); }
+        .squeeze-high { background: linear-gradient(45deg, #ff6348, #ff4757); }
+        .squeeze-moderate { background: linear-gradient(45deg, #ffa502, #ff6348); }
+        .squeeze-low { background: linear-gradient(45deg, #2ed573, #1e90ff); }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .risk-badge.squeeze-extreme { background: #ff4757; }
+        .risk-badge.squeeze-high { background: #ff6348; }
+        .risk-badge.squeeze-moderate { background: #ffa502; }
+        .risk-badge.squeeze-low { background: #2ed573; }
+
+        .price-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .price-item {
+            text-align: center;
+        }
+
+        .price-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .price-change.positive { color: #2ed573; }
+        .price-change.negative { color: #ff4757; }
+
+        .ortex-data {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .ortex-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .ortex-item {
+            text-align: center;
+        }
+
+        .ortex-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #74b9ff;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .status-success {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid #2ed573;
+            color: #2ed573;
+        }
+
+        .status-error {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+        }
+
+        .enhancement-info {
+            background: rgba(116, 185, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(116, 185, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .ticker-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .price-info {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced Ultimate Squeeze Scanner v2.0</h1>
+            <p>Professional-grade short squeeze detection with 5x enhanced data coverage</p>
+        </div>
+
+        <div class="config-panel">
+            <h3>Configuration Panel</h3>
+            <div class="form-group">
+                <label for="ortexKey">Ortex API Key (Optional - uses demo data if not provided):</label>
+                <input type="password" id="ortexKey" placeholder="Enter your Ortex API key for live data">
+            </div>
+            <div class="form-group">
+                <label for="tickers">Stock Tickers (comma-separated):</label>
+                <input type="text" id="tickers" value="GME,AMC,TSLA,AAPL,MSFT" placeholder="GME,AMC,TSLA">
+            </div>
+            <button class="scan-button" onclick="performScan()" id="scanBtn">
+                🔍 Run Enhanced Squeeze Scan
+            </button>
+        </div>
+
+        <div id="results" class="results-container"></div>
+    </div>
+
+    <script>
+        async function performScan() {
+            const scanBtn = document.getElementById('scanBtn');
+            const resultsDiv = document.getElementById('results');
+            const tickers = document.getElementById('tickers').value;
+            const ortexKey = document.getElementById('ortexKey').value;
+
+            // Disable button and show loading
+            scanBtn.disabled = true;
+            scanBtn.textContent = '🔄 Scanning...';
+            
+            resultsDiv.innerHTML = '<div class="status-message">🚀 Running enhanced squeeze scan...</div>';
+
+            try {
+                const response = await fetch('/api/squeeze/scan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tickers: tickers,
+                        ortex_key: ortexKey || undefined
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    resultsDiv.innerHTML = `<div class="status-message status-error">❌ ${data.message || data.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="status-message status-error">❌ Error: ${error.message}</div>`;
+            } finally {
+                scanBtn.disabled = false;
+                scanBtn.textContent = '🔍 Run Enhanced Squeeze Scan';
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `<div class="status-message status-success">✅ ${data.message}</div>`;
+            
+            // Enhancement info
+            if (data.enhancement_info) {
+                html += `
+                <div class="enhancement-info">
+                    <h4>🚀 Enhancement Statistics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                        <div><strong>Cache Hit Rate:</strong> ${data.enhancement_info.cache_hit_rate}</div>
+                        <div><strong>Credits Used:</strong> ${data.total_credits_used || 0}</div>
+                        <div><strong>Real-time Prices:</strong> ${data.enhancement_info.real_time_prices ? '✅' : '❌'}</div>
+                        <div><strong>Ortex Integration:</strong> ${data.enhancement_info.ortex_integration ? '✅ Live' : '🔄 Demo Mode'}</div>
+                    </div>
+                </div>`;
+            }
+
+            // Results
+            data.results.forEach(result => {
+                const scoreClass = getScoreClass(result.squeeze_score);
+                const priceChangeClass = result.price_change >= 0 ? 'positive' : 'negative';
+                const priceChangeSign = result.price_change >= 0 ? '+' : '';
+
+                html += `
+                <div class="result-card">
+                    <div class="ticker-header">
+                        <div>
+                            <div class="ticker-name">${result.ticker}</div>
+                            <span class="risk-badge ${result.risk_class || scoreClass}">${result.squeeze_type}</span>
+                        </div>
+                        <div class="squeeze-score ${scoreClass}">
+                            ${result.squeeze_score}
+                        </div>
+                    </div>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <div>Current Price</div>
+                            <div class="price-value">$${result.current_price}</div>
+                        </div>
+                        <div class="price-item">
+                            <div>Change</div>
+                            <div class="price-value price-change ${priceChangeClass}">
+                                ${priceChangeSign}$${result.price_change} (${priceChangeSign}${result.price_change_pct}%)
+                            </div>
+                        </div>
+                        <div class="price-item">
+                            <div>Volume</div>
+                            <div class="price-value">${(result.volume || 0).toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    ${result.ortex_data ? `
+                    <div class="ortex-data">
+                        <h4>📊 Enhanced Squeeze Metrics</h4>
+                        <div class="ortex-grid">
+                            <div class="ortex-item">
+                                <div>Short Interest</div>
+                                <div class="ortex-value">${result.ortex_data.short_interest}%</div>
+                            </div>
+                            <div class="ortex-item">
+                                <div>Cost to Borrow</div>
+                                <div class="ortex-value">${result.ortex_data.cost_to_borrow}%</div>
+                            </div>
+                            <div class="ortex-item">
+                                <div>Days to Cover</div>
+                                <div class="ortex-value">${result.ortex_data.days_to_cover}</div>
+                            </div>
+                            <div class="ortex-item">
+                                <div>Data Sources</div>
+                                <div class="ortex-value">${result.ortex_data.data_sources.length}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">
+                            Sources: ${result.ortex_data.data_sources.join(', ')} | Confidence: ${result.ortex_data.confidence}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>`;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'squeeze-extreme';
+            if (score >= 60) return 'squeeze-high';
+            if (score >= 40) return 'squeeze-moderate';
+            return 'squeeze-low';
+        }
+
+        // Test API health on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                console.log('🚀 Enhanced Ultimate Squeeze Scanner v2.0 - Health Check:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        };
+    </script>
+</body>
+</html>
