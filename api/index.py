@@ -391,3 +391,303 @@ def handle_500(e):
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+    @app.route('/api/test', methods=['GET', 'POST'])
+def test():
+    try:
+        method = request.method
+        ortex_key = os.environ.get('ORTEX_API_KEY')
+        
+        return jsonify({
+            "status": "test_success",
+            "method": method,
+            "message": "🎯 Enhanced Ultimate Squeeze Scanner v2.0 - FULL POWER!",
+            # ... rest of test function
+        })
+    except Exception as e:
+        return f"Error in test route: {str(e)}", 500
+
+# 👈 ADD THE UI ROUTE HERE:
+@app.route('/ui', methods=['GET'])
+def ui():
+    """Serve the enhanced UI interface"""
+    try:
+        return '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Ultimate Squeeze Scanner v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .config-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        .scan-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .scan-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .results-container {
+            margin-top: 30px;
+        }
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .ticker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .ticker-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .squeeze-score {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+        .squeeze-extreme { background: linear-gradient(45deg, #ff4757, #ff3838); }
+        .squeeze-high { background: linear-gradient(45deg, #ff6348, #ff4757); }
+        .squeeze-moderate { background: linear-gradient(45deg, #ffa502, #ff6348); }
+        .squeeze-low { background: linear-gradient(45deg, #2ed573, #1e90ff); }
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status-success {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid #2ed573;
+            color: #2ed573;
+        }
+        .price-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .price-item {
+            text-align: center;
+        }
+        .price-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .ortex-data {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .ortex-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .ortex-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #74b9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced Ultimate Squeeze Scanner v2.0</h1>
+            <p>Professional-grade short squeeze detection with 5x enhanced data coverage</p>
+        </div>
+
+        <div class="config-panel">
+            <h3>Configuration Panel</h3>
+            <div class="form-group">
+                <label for="ortexKey">Ortex API Key (Optional - uses demo data if not provided):</label>
+                <input type="password" id="ortexKey" placeholder="Enter your Ortex API key for live data">
+            </div>
+            <div class="form-group">
+                <label for="tickers">Stock Tickers (comma-separated):</label>
+                <input type="text" id="tickers" value="GME,AMC,TSLA,AAPL,MSFT" placeholder="GME,AMC,TSLA">
+            </div>
+            <button class="scan-button" onclick="performScan()" id="scanBtn">
+                🔍 Run Enhanced Squeeze Scan
+            </button>
+        </div>
+
+        <div id="results" class="results-container"></div>
+    </div>
+
+    <script>
+        async function performScan() {
+            const scanBtn = document.getElementById('scanBtn');
+            const resultsDiv = document.getElementById('results');
+            const tickers = document.getElementById('tickers').value;
+            const ortexKey = document.getElementById('ortexKey').value;
+
+            scanBtn.disabled = true;
+            scanBtn.textContent = '🔄 Scanning...';
+            resultsDiv.innerHTML = '<div class="status-message">🚀 Running enhanced squeeze scan...</div>';
+
+            try {
+                const response = await fetch('/api/squeeze/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tickers: tickers, ortex_key: ortexKey || undefined })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    resultsDiv.innerHTML = `<div class="status-message">❌ ${data.message || data.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="status-message">❌ Error: ${error.message}</div>`;
+            } finally {
+                scanBtn.disabled = false;
+                scanBtn.textContent = '🔍 Run Enhanced Squeeze Scan';
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = `<div class="status-success status-message">✅ ${data.message}</div>`;
+
+            data.results.forEach(result => {
+                const scoreClass = result.squeeze_score >= 80 ? 'squeeze-extreme' : 
+                                 result.squeeze_score >= 60 ? 'squeeze-high' : 
+                                 result.squeeze_score >= 40 ? 'squeeze-moderate' : 'squeeze-low';
+
+                html += `
+                <div class="result-card">
+                    <div class="ticker-header">
+                        <div>
+                            <div class="ticker-name">${result.ticker}</div>
+                            <span class="risk-badge ${scoreClass}">${result.squeeze_type}</span>
+                        </div>
+                        <div class="squeeze-score ${scoreClass}">${result.squeeze_score}</div>
+                    </div>
+                    <div class="price-info">
+                        <div class="price-item">
+                            <div>Price: <span class="price-value">$${result.current_price}</span></div>
+                        </div>
+                        <div class="price-item">
+                            <div>Change: <span class="price-value">${result.price_change_pct}%</span></div>
+                        </div>
+                    </div>
+                    ${result.ortex_data ? `
+                    <div class="ortex-data">
+                        <h4>📊 Squeeze Metrics</h4>
+                        <div class="ortex-grid">
+                            <div>Short Interest: <div class="ortex-value">${result.ortex_data.short_interest}%</div></div>
+                            <div>Cost to Borrow: <div class="ortex-value">${result.ortex_data.cost_to_borrow}%</div></div>
+                            <div>Days to Cover: <div class="ortex-value">${result.ortex_data.days_to_cover}</div></div>
+                        </div>
+                    </div>` : ''}
+                </div>`;
+            });
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>'''
+    except Exception as e:
+        return f"UI Error: {str(e)}", 500
+
+# Error handler (this stays at the end)
+@app.errorhandler(500)
+def handle_500(e):
+    return jsonify({
+        "status": "error",
+        "message": "Internal server error in Enhanced Squeeze Scanner",
+        "error": str(e),
+        "contact": "Check Vercel function logs for details"
+    }), 500
+
